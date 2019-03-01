@@ -16,6 +16,25 @@ const getLastAddedRecord = function() {
   });
 };
 
+const addInvoice = function(title) {
+  return new Promise(function(resolve, reject) {
+    invoiceRef
+      .add({
+        title,
+        created_at: Date.now()
+      })
+      .then(data => {
+        console.log("The data is: ", data);
+        resolve(true);
+      })
+      .catch(error => {
+        console.log("error");
+        resolve(false);
+      });
+  });
+};
+
 module.exports = {
-  getLastAddedRecord
+  getLastAddedRecord,
+  addInvoice
 };

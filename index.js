@@ -11,7 +11,7 @@
 "use strict";
 const Alexa = require("alexa-sdk");
 // const db = require("./friebaseInit");
-const { getLastAddedRecord } = require("./requests");
+const { getLastAddedRecord, addInvoice } = require("./requests");
 
 //=========================================================================================================================================
 //TODO: The items below this comment need your attention.
@@ -48,6 +48,20 @@ const handlers = {
     });
     // this.emit("GetNewFactIntent");
   },
+  SayHey: function() {
+    const message = "Just say hey";
+    this.response.speak(message).listen("reprompt");
+    this.emit(":responseReady");
+  },
+  CreateInvoice: function() {
+    console.log("test");
+    const nameSlot = this.event.request.intent.slots.name.value;
+    addInvoice(nameSlot).then(() => {
+      const message = "Okay we added the invoice called " + nameSlot;
+      this.response.speak(message);
+      this.emit(":responseReady");
+    });
+  },
   GetNewFactIntent: function() {
     const factArr = data;
     const factIndex = Math.floor(Math.random() * factArr.length);
@@ -55,11 +69,24 @@ const handlers = {
     const speechOutput = GET_FACT_MESSAGE + randomFact;
 
     this.response.cardRenderer(SKILL_NAME, randomFact);
-    this.response.speak(speechOutput);
+    // this.response.speak(speechOutput).reprompt("Next question");
+    this.response.speak("welkom" + " " + "prompt").listen("reprompt");
     this.emit(":responseReady");
   },
   Unhandled: function() {
     this.emit(":ask", HELP_MESSAGE, HELP_MESSAGE);
+  },
+  "AMAZON.YesIntent": function() {
+    console.log("HANDLE");
+    // raise the `SomethingIntent` event, to pass control to the "SomethingIntent" handler below
+    const message = "Yes answer";
+    // this.response.cardRenderer(SKILL_NAME, message);
+    this.response.speak(message);
+    this.emit(":responseReady");
+  },
+  "AMAZON.NoIntent": function() {
+    // handle the case when user says No
+    this.emit(":responseReady");
   },
   "AMAZON.HelpIntent": function() {
     const speechOutput = HELP_MESSAGE;
